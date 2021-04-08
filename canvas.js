@@ -17,13 +17,17 @@ function editMode(){
     console.log("편집모드 진입");
     //mCanvas.setActiveObject(mCanvas.item(objectId-1));
     removeSpot(mCanvas, objectId-1)
+    objectId = objectId -1;
     mCanvas.renderAll();
     
 }
 
 function removeSpot(canvas, id) {
     canvas.forEachObject(function(obj) {
+        console.log("???????" + obj.id);
+        console.log("?????" + id);
         if (obj.id == id) {
+            console.log("?????????????");
             canvas.remove(obj);
         };
     });

@@ -4,46 +4,19 @@
         <title></title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link href="css/style.css" rel="stylesheet">
 
-        <script>
-
-            var canvas;
-            var context;
-
-            function drawOneLine(){
-                
-                initHTML();
-                drawCircle();
-                drawLine();
-            }
-
-            function initHTML(){
-                canvas = document.querySelector('canvas')
-                context = canvas.getContext('2d')
-            }
-
-            function drawCircle(){
-                context.beginPath();
-                context.arc(50, 50, 1, 0, Math.PI*2)
-                context.stroke();
-            }
-
-            function drawLine(){
-                context.beginPath();
-                context.moveTo(50,50);
-                context.lineTo(200,200);
-                context.stroke();
-            }
-
-        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/4.3.1/fabric.min.js"></script>
+        <script type="text/javascript" src="./canvas.js"></script>
 
     </head>
-    <body onload="drawOneLine()">
-
+    <body>
         <div>
             <h5>draw instrument example</h5>
         </div>
-        <canvas width="1000" height="1000"></canvas>
+
+        <div>
+           <p id="editMode" onclick="editMode()">뒤로가기</p> 
+        </div>
+        <canvas id="c" width="1000" height="1000" style="border:1px solid #ccc"></canvas>
     </body>
 </html>
