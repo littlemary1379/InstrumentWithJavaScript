@@ -1,0 +1,46 @@
+<<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title></title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link href="css/style.css" rel="stylesheet">
+
+        <script>
+
+            function drawOneLine(){
+                drawCircle();
+                drawLine();
+            }
+            function drawCircle(){
+                var canvas = document.querySelector('canvas')
+                var context = canvas.getContext('2d')
+                context.beginPath();
+                context.arc(50, 50, 1, 0, Math.PI*2)
+                context.moveTo(50,50);
+                context.lineTo(200,200);
+                context.stroke();
+
+                context.beginPath();
+                context.moveTo(50,50);
+                context.lineTo(200,200);
+                context.stroke();
+            }
+
+            function drawLine(){
+                var canvas = document.querySelector('canvas')
+                var context = canvas.getContext('2d')
+
+                context.beginPath();
+                context.moveTo(50,50);
+                context.lineTo(200,200);
+                context.stroke();
+            }
+
+        </script>
+
+    </head>
+    <body onload="drawOneLine()">
+        <canvas width="100" height="100"></canvas>
+    </body>
+</html>
