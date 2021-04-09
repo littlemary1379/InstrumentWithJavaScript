@@ -25,6 +25,9 @@ var addFirstVector;
 
 //가이드라인 보정 변수
 var isGuideline = false;
+var xGuideLine;
+var yGuideLine;
+
 
 //최종적으로 이전하는 좌표 리스트
 var floorVectorList;
@@ -36,7 +39,8 @@ window.onload = function drawOneLine(){
 }
 
 function initHTML(){
-    mCanvas = window._canvas = new fabric.Canvas('c', {selection : false});
+    mCanvas = window._canvas = new fabric.Canvas('c');
+    mCanvas.selection = false;
 }
 
 function editMode(){
@@ -126,7 +130,6 @@ function drawGuideline(x, y){
     if(x+250 > 1000) lastX = 1000
     else lastX = x+250
 
-
     if(y-250 < 0) firstY = 0
     else firstY = y-250
 
@@ -136,18 +139,18 @@ function drawGuideline(x, y){
     var xPoint = [firstX, y, lastX, y];
     var yPoint = [x, firstY, x, lastY]; 
 
-    var xGuideLine = new fabric.Line(xPoint, {
+    xGuideLine = new fabric.Line(xPoint, {
         id : 'xGuideLine',
-        strokeWidth : 2,
+        strokeWidth : 3,
         fill : 'rgba(211,211,211,0.5)',
         stroke : 'rgba(211,211,211,0.5)',
         originX : 'center',
         originY : 'center'
     });
 
-    var yGuideLine = new fabric.Line(yPoint, {
+    yGuideLine = new fabric.Line(yPoint, {
         id : 'yGuideLine',
-        strokeWidth : 2,
+        strokeWidth : 3,
         fill : 'rgba(211,211,211,0.5)',
         stroke : 'rgba(211,211,211,0.5)',
         originX : 'center',
@@ -156,7 +159,6 @@ function drawGuideline(x, y){
     
     mCanvas.add(xGuideLine);
     mCanvas.add(yGuideLine);
-
     mCanvas.renderAll();
 }
 
@@ -188,9 +190,6 @@ function setListener(){
             if(isGuideline) {
                 drawGuideline(firstVector[0], firstVector[1])
             }
-
-
-           // floorVectorList.add(vector3())
             
         } else {
             console.log("not null");
@@ -212,20 +211,9 @@ function setListener(){
             addFirstVector = [lastPoint[0], lastPoint[1]];
 
         }
-        
-        // var circle = new fabric.Circle({
-        //     left : pointer.x,
-        //     top : pointer.y,
-        //     radius : 5,
-        //     fill : '',
-        //     stroke : 'black',
-        //     originX : 'center',
-        //     originY : 'center'
-        // })
-
+    
         console.log(objectId);
         mCanvas.add(line)
-        // mCanvas.add(circle)
 
     });
 
@@ -239,6 +227,7 @@ function setListener(){
         console.log("마우스 이동");
 
         var pointer = mCanvas.getPointer(o.e);
+        var x2poistion;
 
         if(isCorrection) {
             var slopeLength = lengthXtoY(addFirstVector, [pointer.x, pointer.y])
@@ -251,34 +240,60 @@ function setListener(){
 
             var cos45 = Math.sqrt(2)/2;
             var cosRadius = xLength/slopeLength; 
-            //console.log("슬로프 길이 : " +slopeLength, " , x길이 : "+ xLength)
-            //console.log("루트 2 " + Math.sqrt(2))
+
             if(cosRadius > cos45 && cosRadius < 1) {
-                console.log("45도 미만");
                 line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                x2poistion = [pointer.x,  addFirstVector[1]];
                 isX = true;
             } else if (cosRadius <= cos45 && cosRadius > 0 ){
-                console.log("45도 이상");
                 line.set({x2 : addFirstVector[0], y2 : pointer.y});
+                x2poistion = [addFirstVector[0],  pointer.y];
                 isX = false;
             } else if(slopeLength == xLength){
-                console.log("길이가 같다.")
                 line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                x2poistion = [pointer.x,  addFirstVector[1]];
                 isX = true;
             } else if(xLength == 0){
-                console.log("x값 변화가 없다.")
                 line.set({x2 : addFirstVector[0], y2 : pointer.y});
-                isX = true;
+                x2poistion = [addFirstVector[0],  pointer.y];
+                isX = false;
             } else {
                 console.log("수식 오류 : "+ cosRadius)
             }
 
-    
 
         } else {
-
             line.set({x2 : pointer.x, y2 : pointer.y});
-        
+            x2poistion = [pointer.x,  pointer.y];
+        }
+
+        if(isGuideline) {
+
+            if(x2poistion[0] == firstVector[0]) {
+                yGuideLine.set({
+                    fill : '#ab88ff',
+                    stroke : '#ab88ff'
+                })
+            } else {
+                yGuideLine.set({
+                    fill : 'rgba(211,211,211,0.5)',
+                    stroke : 'rgba(211,211,211,0.5)'
+                })
+            }
+
+            if(x2poistion[1] == firstVector[1]) {
+                xGuideLine.set({
+                    fill : '#ab88ff',
+                    stroke : '#ab88ff'
+    
+                })
+            } else {
+                xGuideLine.set({
+                    fill : 'rgba(211,211,211,0.5)',
+                    stroke : 'rgba(211,211,211,0.5)'
+                })
+            }
+
         }
 
         mCanvas.renderAll();
@@ -306,7 +321,6 @@ function setListener(){
         } else {
             console.log("랜더링 안만들어져쏘");
             renderingObject = false;
-
         }
     
     });
