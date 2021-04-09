@@ -23,6 +23,9 @@ var isCorrection = false;
 var isX;
 var addFirstVector;
 
+//최종적으로 이전하는 좌표 리스트
+var floorVectorList;
+
 window.onload = function drawOneLine(){
     
     initHTML();
@@ -106,7 +109,10 @@ function setListener(){
             });
 
             firstVector = [pointer.x, pointer.y];
-            addFirstVector = [pointer.x, pointer.y]
+            addFirstVector = [pointer.x, pointer.y];
+
+
+           // floorVectorList.add(vector3())
             
         } else {
             console.log("not null");
@@ -125,7 +131,7 @@ function setListener(){
                 originY : 'center'
             }); 
 
-            addFirstVector = [pointer.x, pointer.y];
+            addFirstVector = [lastPoint[0], lastPoint[1]];
 
         }
         
@@ -159,7 +165,7 @@ function setListener(){
         if(isCorrection) {
             var slopeLength = lengthXtoY(addFirstVector, [pointer.x, pointer.y])
             var xLength;
-            if(addFirstVector[0] - pointer.x > 0 ){
+            if(addFirstVector[0] - pointer.x >= 0 ){
                 xLength = addFirstVector[0] - pointer.x
             } else {
                 xLength = pointer.x - addFirstVector[0]
@@ -169,17 +175,28 @@ function setListener(){
             var cosRadius = xLength/slopeLength; 
             //console.log("슬로프 길이 : " +slopeLength, " , x길이 : "+ xLength)
             //console.log("루트 2 " + Math.sqrt(2))
-            if(cosRadius > cos45 && cosRadius <= 1) {
+            if(cosRadius > cos45 && cosRadius < 1) {
                 console.log("45도 미만");
                 line.set({x2 : pointer.x, y2 : addFirstVector[1]});
                 isX = true;
-            } else if (cosRadius <= cos45 && cosRadius >= 0 ){
+            } else if (cosRadius <= cos45 && cosRadius > 0 ){
                 console.log("45도 이상");
                 line.set({x2 : addFirstVector[0], y2 : pointer.y});
                 isX = false;
+            } else if(slopeLength == xLength){
+                console.log("길이가 같다.")
+                line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                isX = true;
+            } else if(xLength == 0){
+                console.log("x값 변화가 없다.")
+                line.set({x2 : addFirstVector[0], y2 : pointer.y});
+                isX = true;
             } else {
                 console.log("수식 오류 : "+ cosRadius)
             }
+
+    
+
         } else {
 
             line.set({x2 : pointer.x, y2 : pointer.y});
