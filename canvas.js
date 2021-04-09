@@ -1,14 +1,27 @@
+document.write('<script src="./util/MathUtil.js"></script>');
+
+//기본 랜더링 변수
 var mCanvas;
-
-var line = line;
-
+var line;
 var isDown;
-var renderingObject = false;
+
 var newLine;
 
-var lastPoint;
+//삭제에 사용하기 위한 변수
 var objectId = 0;
+var renderingObject = false;
 
+//첫 벡터 근처로 오는것을 감지
+var firstVector = null;
+var nearFirstVector = false;
+
+// 마지막 점에서 움직이기 위한 변수
+var lastPoint;
+
+//보정에 사용하는 변수
+var isCorrection = false;
+var isX;
+var addFirstVector;
 
 window.onload = function drawOneLine(){
     
@@ -21,11 +34,15 @@ function initHTML(){
 }
 
 function editMode(){
+    var target = document.getElementById("editMode")
     console.log("편집모드 진입");
+    target.style.color = "red";
     //mCanvas.setActiveObject(mCanvas.item(objectId-1));
 
     if(objectId == 0) {
         console.log("랜더링 없음");
+        target.style.color = "black";
+
         return;
     } 
 
@@ -33,6 +50,22 @@ function editMode(){
     objectId = objectId -1;
     mCanvas.renderAll();
     console.log("편집모드 종료");
+    target.style.color = "black";
+
+}
+
+function correctionMode(){
+    var target = document.getElementById("correctionMode")
+   
+    if(!isCorrection) {
+        isCorrection = true;
+        target.style.color = "red";
+        console.log("보정모드 진입");
+    } else {
+        isCorrection = false;
+        target.style.color = "black"; 
+        console.log("보정모드 종료");
+    }
     
 }
 
@@ -71,6 +104,10 @@ function setListener(){
                 originX : 'center',
                 originY : 'center'
             });
+
+            firstVector = [pointer.x, pointer.y];
+            addFirstVector = [pointer.x, pointer.y]
+            
         } else {
             console.log("not null");
 
@@ -87,10 +124,11 @@ function setListener(){
                 originX : 'center',
                 originY : 'center'
             }); 
+
+            addFirstVector = [pointer.x, pointer.y];
+
         }
         
-        
-
         // var circle = new fabric.Circle({
         //     left : pointer.x,
         //     top : pointer.y,
@@ -113,26 +151,58 @@ function setListener(){
             return;
         }
 
-
         renderingObject = true;
-        
-
         console.log("마우스 이동");
 
         var pointer = mCanvas.getPointer(o.e);
 
-        lastPoint = [pointer.x, pointer.y];
+        if(isCorrection) {
+            var slopeLength = lengthXtoY(addFirstVector, [pointer.x, pointer.y])
+            var xLength;
+            if(addFirstVector[0] - pointer.x > 0 ){
+                xLength = addFirstVector[0] - pointer.x
+            } else {
+                xLength = pointer.x - addFirstVector[0]
+            }
 
-        line.set({x2 : pointer.x, y2 : pointer.y});
+            var cos45 = Math.sqrt(2)/2;
+            var cosRadius = xLength/slopeLength; 
+            //console.log("슬로프 길이 : " +slopeLength, " , x길이 : "+ xLength)
+            //console.log("루트 2 " + Math.sqrt(2))
+            if(cosRadius > cos45 && cosRadius <= 1) {
+                console.log("45도 미만");
+                line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                isX = true;
+            } else if (cosRadius <= cos45 && cosRadius >= 0 ){
+                console.log("45도 이상");
+                line.set({x2 : addFirstVector[0], y2 : pointer.y});
+                isX = false;
+            } else {
+                console.log("수식 오류 : "+ cosRadius)
+            }
+        } else {
+
+            line.set({x2 : pointer.x, y2 : pointer.y});
+        
+        }
+
         mCanvas.renderAll();
-    
-       
 
     });
 
     mCanvas.on('mouse:up', function(o){
         console.log("마우스 업");
         isDown = false;
+
+        var pointer = mCanvas.getPointer(o.e);
+
+        if(isCorrection && isX) {
+            lastPoint = [pointer.x, addFirstVector[1]];
+        } else if(isCorrection && !isX) {
+            lastPoint = [addFirstVector[0], pointer.y];
+        } else {
+            lastPoint = [pointer.x, pointer.y];
+        }
 
         if(renderingObject == true) {
             console.log("랜더링 만들어져쏘");
@@ -143,7 +213,6 @@ function setListener(){
             renderingObject = false;
 
         }
-        
     
     });
 
