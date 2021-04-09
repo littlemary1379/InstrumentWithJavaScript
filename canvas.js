@@ -23,6 +23,9 @@ var isCorrection = false;
 var isX;
 var addFirstVector;
 
+//가이드라인 보정 변수
+var isGuideline = false;
+
 //최종적으로 이전하는 좌표 리스트
 var floorVectorList;
 
@@ -58,8 +61,8 @@ function editMode(){
 }
 
 function correctionMode(){
-    var target = document.getElementById("correctionMode")
-   
+    var target = document.getElementById("correctionMode");
+
     if(!isCorrection) {
         isCorrection = true;
         target.style.color = "red";
@@ -70,6 +73,35 @@ function correctionMode(){
         console.log("보정모드 종료");
     }
     
+
+}
+
+
+function guidelineMode(){
+    var target = document.getElementById("guidelineMode");
+    
+    if(!isGuideline) {
+        console.log("가이드라인 모드 진입");
+        target.style.color = "red";
+        isGuideline = true;
+        if(firstVector == null) {
+            console.log("찍어놓은 좌표 없음");
+        } else {
+            console.log("찍어놓은 좌표 있음");
+            drawGuideline(firstVector[0],firstVector[1])
+        }
+
+    } else {
+        console.log("가이드라인 모드 해제");
+        target.style.color = "black";
+        removeSpot(mCanvas, "xGuideLine")
+        removeSpot(mCanvas, "yGuideLine")
+
+        isGuideline = false;
+
+    }
+
+
 }
 
 function removeSpot(canvas, id) {
@@ -84,6 +116,48 @@ function removeSpot(canvas, id) {
             canvas.remove(obj);
         };
     });
+}
+
+function drawGuideline(x, y){
+    var firstX, firstY, lastX, lastY;
+    if(x-250 < 0) firstX = 0
+    else firstX = x-250
+
+    if(x+250 > 1000) lastX = 1000
+    else lastX = x+250
+
+
+    if(y-250 < 0) firstY = 0
+    else firstY = y-250
+
+    if(y+250 > 1000) lastY = 1000
+    else lastY = y+250
+
+    var xPoint = [firstX, y, lastX, y];
+    var yPoint = [x, firstY, x, lastY]; 
+
+    var xGuideLine = new fabric.Line(xPoint, {
+        id : 'xGuideLine',
+        strokeWidth : 2,
+        fill : 'rgba(211,211,211,0.5)',
+        stroke : 'rgba(211,211,211,0.5)',
+        originX : 'center',
+        originY : 'center'
+    });
+
+    var yGuideLine = new fabric.Line(yPoint, {
+        id : 'yGuideLine',
+        strokeWidth : 2,
+        fill : 'rgba(211,211,211,0.5)',
+        stroke : 'rgba(211,211,211,0.5)',
+        originX : 'center',
+        originY : 'center'
+    });
+    
+    mCanvas.add(xGuideLine);
+    mCanvas.add(yGuideLine);
+
+    mCanvas.renderAll();
 }
 
 function setListener(){
@@ -102,14 +176,18 @@ function setListener(){
             line = new fabric.Line(point, {
                 id : objectId,
                 strokeWidth : 2,
-                fill : 'black',
-                stroke : 'black',
+                fill : 'rgba(0,0,0,128)',
+                stroke : 'rgba(0,0,0,0.5)',
                 originX : 'center',
                 originY : 'center'
             });
 
             firstVector = [pointer.x, pointer.y];
             addFirstVector = [pointer.x, pointer.y];
+
+            if(isGuideline) {
+                drawGuideline(firstVector[0], firstVector[1])
+            }
 
 
            // floorVectorList.add(vector3())
@@ -125,8 +203,8 @@ function setListener(){
             line = new fabric.Line(point, {
                 id : objectId,
                 strokeWidth : 2,
-                fill : 'black',
-                stroke : 'black',
+                fill : 'rgba(0,0,0,1)',
+                stroke : 'rgba(0,0,0,0.5)',
                 originX : 'center',
                 originY : 'center'
             }); 
