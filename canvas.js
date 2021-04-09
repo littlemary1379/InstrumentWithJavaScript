@@ -156,9 +156,14 @@ function drawGuideline(x, y){
         originX : 'center',
         originY : 'center'
     });
+
+    
     
     mCanvas.add(xGuideLine);
     mCanvas.add(yGuideLine);
+
+    xGuideLine.selectable = false
+
     mCanvas.renderAll();
 }
 
