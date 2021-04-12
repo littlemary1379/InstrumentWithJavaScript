@@ -316,9 +316,16 @@ function setListener(){
 
         }
 
-        console.log(Math.asin(cosRadius)*(180/Math.PI));
 
-        lengthText.rotate(Math.acos(cosRadius)*(180/Math.PI));
+        if((pointer.x-addFirstVector[0] > 0 && pointer.y-addFirstVector[1] > 0) || (pointer.x-addFirstVector[0] < 0 && pointer.y-addFirstVector[1] < 0)) {
+            console.log("2,4사분면");
+            
+            lengthText.rotate(Math.acos(cosRadius)*(180/Math.PI));
+        } else {
+            console.log("1,3사분면");
+            lengthText.rotate(-Math.acos(cosRadius)*(180/Math.PI));
+        }
+
         if(slopeLength != 0) {
             lengthText.set({
                 left : (pointer.x + addFirstVector[0])/2, 
