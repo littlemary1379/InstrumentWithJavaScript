@@ -28,6 +28,8 @@ var isGuideline = false;
 var xGuideLine;
 var yGuideLine;
 
+//길이 출력 변수
+var lengthText;
 
 //최종적으로 이전하는 좌표 리스트
 var floorVectorList;
@@ -162,7 +164,8 @@ function drawGuideline(x, y){
     mCanvas.add(xGuideLine);
     mCanvas.add(yGuideLine);
 
-    xGuideLine.selectable = false
+    xGuideLine.selectable = false;
+    yGuideLine.selectable = false;
 
     mCanvas.renderAll();
 }
@@ -195,6 +198,8 @@ function setListener(){
             if(isGuideline) {
                 drawGuideline(firstVector[0], firstVector[1])
             }
+
+
             
         } else {
             console.log("not null");
@@ -216,10 +221,20 @@ function setListener(){
             addFirstVector = [lastPoint[0], lastPoint[1]];
 
         }
-    
-        console.log(objectId);
-        mCanvas.add(line)
 
+        
+        lengthText = new fabric.Text("0 m", {
+            left : pointer.x, 
+            top : pointer.y,
+            opacity : 0,
+            fontSize : 20
+        });
+        
+        lengthText.selectable = false;
+
+        mCanvas.add(lengthText)
+        mCanvas.add(line)
+        
     });
 
     mCanvas.on('mouse:move', function(o){
@@ -234,17 +249,18 @@ function setListener(){
         var pointer = mCanvas.getPointer(o.e);
         var x2poistion;
 
-        if(isCorrection) {
-            var slopeLength = lengthXtoY(addFirstVector, [pointer.x, pointer.y])
-            var xLength;
-            if(addFirstVector[0] - pointer.x >= 0 ){
-                xLength = addFirstVector[0] - pointer.x
-            } else {
-                xLength = pointer.x - addFirstVector[0]
-            }
+        var slopeLength = lengthXtoY(addFirstVector, [pointer.x, pointer.y])
+        var xLength;
+        if(addFirstVector[0] - pointer.x >= 0 ){
+            xLength = addFirstVector[0] - pointer.x
+        } else {
+            xLength = pointer.x - addFirstVector[0]
+        }
 
-            var cos45 = Math.sqrt(2)/2;
-            var cosRadius = xLength/slopeLength; 
+        var cos45 = Math.sqrt(2)/2;
+        var cosRadius = xLength/slopeLength; 
+
+        if(isCorrection) {
 
             if(cosRadius > cos45 && cosRadius < 1) {
                 line.set({x2 : pointer.x, y2 : addFirstVector[1]});
@@ -265,7 +281,6 @@ function setListener(){
             } else {
                 console.log("수식 오류 : "+ cosRadius)
             }
-
 
         } else {
             line.set({x2 : pointer.x, y2 : pointer.y});
@@ -300,6 +315,18 @@ function setListener(){
             }
 
         }
+
+        console.log(Math.asin(cosRadius)*(180/Math.PI));
+
+        lengthText.rotate(Math.acos(cosRadius)*(180/Math.PI));
+        if(slopeLength != 0) {
+            lengthText.set({
+                left : (pointer.x + addFirstVector[0])/2, 
+                top : (pointer.y+addFirstVector[1])/2,
+                text : Math.round(slopeLength*10)/10 + " m",
+                opacity : 1
+            })
+        }        
 
         mCanvas.renderAll();
 
