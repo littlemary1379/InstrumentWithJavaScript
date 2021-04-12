@@ -262,19 +262,12 @@ function setListener(){
 
         if(isCorrection) {
 
-            if(cosRadius > cos45 && cosRadius < 1) {
+            if(cosRadius > cos45 && cosRadius <= 1) {
                 line.set({x2 : pointer.x, y2 : addFirstVector[1]});
                 x2poistion = [pointer.x,  addFirstVector[1]];
                 isX = true;
-            } else if (cosRadius <= cos45 && cosRadius > 0 ){
-                line.set({x2 : addFirstVector[0], y2 : pointer.y});
-                x2poistion = [addFirstVector[0],  pointer.y];
-                isX = false;
-            } else if(slopeLength == xLength){
-                line.set({x2 : pointer.x, y2 : addFirstVector[1]});
-                x2poistion = [pointer.x,  addFirstVector[1]];
-                isX = true;
-            } else if(xLength == 0){
+                
+            } else if (cosRadius <= cos45 && cosRadius >= 0 ){
                 line.set({x2 : addFirstVector[0], y2 : pointer.y});
                 x2poistion = [addFirstVector[0],  pointer.y];
                 isX = false;
@@ -282,9 +275,51 @@ function setListener(){
                 console.log("수식 오류 : "+ cosRadius)
             }
 
+            if(isX == true) {
+                lengthText.rotate(0);
+                if(slopeLength != 0) {
+                    lengthText.set({
+                        left : (pointer.x+addFirstVector[0])/2,
+                        top : addFirstVector[1],
+                        text : Math.round(slopeLength*10)/10 + " m",
+                        opacity : 1
+                    })
+                } 
+            } else if(isX == false) {
+                lengthText.rotate(90);
+                if(slopeLength != 0) {
+                    lengthText.set({
+                        left : addFirstVector[0],
+                        top : (pointer.y+addFirstVector[1])/2,
+                        text : Math.round(slopeLength*10)/10 + " m",
+                        opacity : 1
+                    })
+                } 
+            }
+            
+             
+
         } else {
             line.set({x2 : pointer.x, y2 : pointer.y});
             x2poistion = [pointer.x,  pointer.y];
+
+            
+            if((pointer.x-addFirstVector[0] > 0 && pointer.y-addFirstVector[1] > 0) || (pointer.x-addFirstVector[0] < 0 && pointer.y-addFirstVector[1] < 0)) {
+                console.log("2,4사분면");
+                lengthText.rotate(Math.acos(cosRadius)*(180/Math.PI));
+            } else {
+                console.log("1,3사분면");
+                lengthText.rotate(-Math.acos(cosRadius)*(180/Math.PI));
+            }
+
+            if(slopeLength != 0) {
+                lengthText.set({
+                    left : (pointer.x + addFirstVector[0])/2, 
+                    top : (pointer.y+addFirstVector[1])/2,
+                    text : Math.round(slopeLength*10)/10 + " m",
+                    opacity : 1
+                })
+            }  
         }
 
         if(isGuideline) {
@@ -314,26 +349,7 @@ function setListener(){
                 })
             }
 
-        }
-
-
-        if((pointer.x-addFirstVector[0] > 0 && pointer.y-addFirstVector[1] > 0) || (pointer.x-addFirstVector[0] < 0 && pointer.y-addFirstVector[1] < 0)) {
-            console.log("2,4사분면");
-            
-            lengthText.rotate(Math.acos(cosRadius)*(180/Math.PI));
-        } else {
-            console.log("1,3사분면");
-            lengthText.rotate(-Math.acos(cosRadius)*(180/Math.PI));
-        }
-
-        if(slopeLength != 0) {
-            lengthText.set({
-                left : (pointer.x + addFirstVector[0])/2, 
-                top : (pointer.y+addFirstVector[1])/2,
-                text : Math.round(slopeLength*10)/10 + " m",
-                opacity : 1
-            })
-        }        
+        }      
 
         mCanvas.renderAll();
 
