@@ -281,19 +281,30 @@ function setListener(){
 
             if(cosRadius > cos45 && cosRadius <= 1) {
 
-                console.log("?????" +  length);
-                console.log("?????" +  addFirstVector[0]);
-                console.log("?????" +  addFirstVector[0]+length);
-
                 if(isLengthCorrection) {
 
-                    line.set({x2 : addFirstVector[0]+length, y2 : addFirstVector[1]});
-                    x2poistion = [addFirstVector[0]+length,  addFirstVector[1]];
+                    if(addFirstVector[0] < pointer.x) {
+                        line.set({x2 : addFirstVector[0]+length, y2 : addFirstVector[1]});
+                        x2poistion = [addFirstVector[0]+length,  addFirstVector[1]];
+                    } else {
+                        line.set({x2 : addFirstVector[0]-length, y2 : addFirstVector[1]});
+                        x2poistion = [addFirstVector[0]-length,  addFirstVector[1]];
+                    } 
+
+                    lengthText.set({
+                        text : length + " m",
+                        opacity : 1
+                    })
 
                 } else {
 
                     line.set({x2 : pointer.x, y2 : addFirstVector[1]});
                     x2poistion = [pointer.x,  addFirstVector[1]];
+
+                    lengthText.set({
+                        text : Math.round(slopeLength*10)/10 + " m",
+                        opacity : 1
+                    })
 
                 }
 
@@ -303,48 +314,98 @@ function setListener(){
 
                 if(isLengthCorrection) {
 
-                    line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]+length});
-                    x2poistion = [addFirstVector[0],  addFirstVector[1]+length];
+                    if(addFirstVector[1] < pointer.y) {
+                        line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]+length});
+                        x2poistion = [addFirstVector[0],  addFirstVector[1]+length];
+                    } else {
+                        line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]-length});
+                        x2poistion = [addFirstVector[0],  addFirstVector[1]-length];
+                    } 
+
+                    lengthText.set({
+                        text : length + " m",
+                        opacity : 1
+                    })
 
                 } else {
 
                     line.set({x2 : addFirstVector[0], y2 : pointer.y});
                     x2poistion = [addFirstVector[0],  pointer.y];
 
-                }
+                    lengthText.set({
+                        text : Math.round(slopeLength*10)/10 + " m",
+                        opacity : 1
+                    })
 
+                }
 
                 isX = false;
             } else {
                 console.log("수식 오류 : "+ cosRadius)
             }
 
+            var textSize = 0;
+            for (var i = 0; i < lengthText._textLines.length; i++) {
+                textSize += lengthText.measureLine(i).width;
+            }
+
             if(isX == true) {
+
                 lengthText.rotate(0);
-                if(slopeLength != 0) {
-                    lengthText.set({
-                        left : (pointer.x+addFirstVector[0])/2,
-                        top : addFirstVector[1],
-                        text : Math.round(slopeLength*10)/10 + " m",
-                        opacity : 1
-                    })
-                } 
+                if(isLengthCorrection) {
+                    if(slopeLength != 0) {  
+                        if(addFirstVector[0] < pointer.x) {
+                            lengthText.set({
+                                left : addFirstVector[0]+length/2-textSize/2,
+                                top : addFirstVector[1],
+                            })
+                        } else {
+                            lengthText.set({
+                                left : addFirstVector[0]-length/2-textSize/2,
+                                top : addFirstVector[1],
+                            })
+                        } 
+
+                    } 
+                } else {
+                    if(slopeLength != 0) {
+                        lengthText.set({
+                            left : (pointer.x+addFirstVector[0])/2-textSize/2,
+                            top : addFirstVector[1],
+                        })
+                    } 
+                }    
+                
             } else if(isX == false) {
                 lengthText.rotate(90);
-                if(slopeLength != 0) {
+
+                if(isLengthCorrection) {
+                    if(slopeLength != 0) {
+
+                        if(addFirstVector[1] < pointer.y) {
+                            lengthText.set({
+                                left : addFirstVector[0],
+                                top : addFirstVector[1]+length/2-textSize/2
+                            });
+                        } else {
+                            lengthText.set({
+                                left : addFirstVector[0],
+                                top : addFirstVector[1]-length/2-textSize/2
+                            });
+                        }
+                    } 
+                } else {
                     lengthText.set({
                         left : addFirstVector[0],
-                        top : (pointer.y+addFirstVector[1])/2,
-                        text : Math.round(slopeLength*10)/10 + " m",
-                        opacity : 1
-                    })
-                } 
+                        top : (pointer.y+addFirstVector[1])/2-textSize/2,
+                    });
+                }
+            
             }
             
         } else {
             line.set({x2 : pointer.x, y2 : pointer.y});
             x2poistion = [pointer.x,  pointer.y];
-
             
             if((pointer.x-addFirstVector[0] > 0 && pointer.y-addFirstVector[1] > 0) || (pointer.x-addFirstVector[0] < 0 && pointer.y-addFirstVector[1] < 0)) {
                 console.log("2,4사분면");
@@ -404,9 +465,33 @@ function setListener(){
         var pointer = mCanvas.getPointer(o.e);
 
         if(isCorrection && isX) {
-            lastPoint = [pointer.x, addFirstVector[1]];
+
+            if(isLengthCorrection) {
+
+                if(addFirstVector[0] < pointer.x) {
+                    lastPoint = [addFirstVector[0]+length, addFirstVector[1]];
+                } else {
+                    lastPoint = [addFirstVector[0]-length, addFirstVector[1]];
+                } 
+
+            } else {
+                lastPoint = [pointer.x, addFirstVector[1]];
+            }
+            
         } else if(isCorrection && !isX) {
-            lastPoint = [addFirstVector[0], pointer.y];
+
+            if(isLengthCorrection) {
+
+                if(addFirstVector[1] < pointer.y) {
+                    lastPoint = [addFirstVector[0], addFirstVector[1]+length];
+                } else {
+                    lastPoint = [addFirstVector[0], addFirstVector[1]-length];
+                } 
+
+            } else {
+                lastPoint = [addFirstVector[0], pointer.y];
+            }
+
         } else {
             lastPoint = [pointer.x, pointer.y];
         }
