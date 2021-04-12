@@ -5,3 +5,12 @@ function lengthXtoY(firstVector, secondVector){
 function squared(number, squared){
     return Math.pow(number, squared)
 }
+
+function xLocationForCos(slopeLength, cos){
+    return slopeLength * cos
+}
+
+function yLocationForCos(slopeLength, xLength) {
+    var ylength = Math.sqrt(squared(slopeLength,2) - squared(xLength,2))
+    return ylength;
+}

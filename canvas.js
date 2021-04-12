@@ -404,25 +404,73 @@ function setListener(){
             }
             
         } else {
-            line.set({x2 : pointer.x, y2 : pointer.y});
-            x2poistion = [pointer.x,  pointer.y];
-            
+
+            if(isLengthCorrection) {
+                var cosXlength = xLocationForCos(length, cosRadius)
+                var cosYlength = yLocationForCos(length, cosXlength)
+
+                if(addFirstVector[0] > pointer.x) {
+                    cosXlength = -cosXlength;
+                }
+                
+                if(addFirstVector[1] > pointer.y) {
+                    cosYlength = -cosYlength;
+                }
+
+                line.set({x2 : addFirstVector[0]+cosXlength, y2 : addFirstVector[1]+cosYlength});
+                x2poistion = [addFirstVector[0]+cosXlength,  addFirstVector[1]+cosYlength];
+
+                lengthText.set({
+                    text : length + " m",
+                    opacity : 1
+                })
+
+                var textSize = 0;
+                for (var i = 0; i < lengthText._textLines.length; i++) {
+                    textSize += lengthText.measureLine(i).width;
+                }
+
+                var textXlength = xLocationForCos(textSize, cosRadius)
+                var textYlength = yLocationForCos(textSize, textXlength)
+
+                console.log("textXlength : "+textXlength);
+                console.log("textXlength : "+((addFirstVector[0])+(cosXlength/2)-textXlength));
+                console.log("textXlength : "+ addFirstVector[0]);
+
+                //console.log("textXlength : "+addFirstVector[0]+cosXlength/2-textXlength);
+
+                lengthText.set({
+                    left : (addFirstVector[0])+(cosXlength/2)-textXlength/2, 
+                    top : addFirstVector[1]+cosYlength/2-textYlength/2,
+                })
+
+            } else {
+
+                line.set({x2 : pointer.x, y2 : pointer.y});
+                x2poistion = [pointer.x,  pointer.y];
+
+                if(slopeLength != 0) {
+                    lengthText.set({
+                        left : (pointer.x + addFirstVector[0])/2, 
+                        top : (pointer.y+addFirstVector[1])/2,
+                        text : Math.round(slopeLength*10)/10 + " m",
+                        opacity : 1
+                    })
+                }
+
+            }
+        
             if((pointer.x-addFirstVector[0] > 0 && pointer.y-addFirstVector[1] > 0) || (pointer.x-addFirstVector[0] < 0 && pointer.y-addFirstVector[1] < 0)) {
-                console.log("2,4사분면");
+                //console.log("2,4사분면");
                 lengthText.rotate(Math.acos(cosRadius)*(180/Math.PI));
             } else {
-                console.log("1,3사분면");
+                //console.log("1,3사분면");
                 lengthText.rotate(-Math.acos(cosRadius)*(180/Math.PI));
             }
 
-            if(slopeLength != 0) {
-                lengthText.set({
-                    left : (pointer.x + addFirstVector[0])/2, 
-                    top : (pointer.y+addFirstVector[1])/2,
-                    text : Math.round(slopeLength*10)/10 + " m",
-                    opacity : 1
-                })
-            }  
+
+
+  
         }
 
         if(isGuideline) {
