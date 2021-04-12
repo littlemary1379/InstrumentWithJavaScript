@@ -31,6 +31,10 @@ var yGuideLine;
 //길이 출력 변수
 var lengthText;
 
+//길이 보정 변수
+var isLengthCorrection = false;
+var length;
+
 //최종적으로 이전하는 좌표 리스트
 var floorVectorList;
 
@@ -79,7 +83,6 @@ function correctionMode(){
         console.log("보정모드 종료");
     }
     
-
 }
 
 
@@ -107,7 +110,27 @@ function guidelineMode(){
 
     }
 
+}
 
+function lengthCorrectionMode() {
+    var lengthString = document.getElementById('lengthCorrection').value;
+    length = lengthString*1
+    var target = document.getElementById('lengthCorrectionMode');
+
+    if(isLengthCorrection == false) {
+        if(length == null || length <=0) {
+            console.log("길이 없음");
+            return;
+        } else {
+            console.log("길이보정 모드 시작 : " + length);
+            isLengthCorrection = true;
+            target.style.color = "red";
+        }
+    } else {
+        console.log("길이보정 모드 해제");
+        target.style.color = "black";
+        isLengthCorrection = false;
+    }
 }
 
 function removeSpot(canvas, id) {
@@ -177,8 +200,6 @@ function setListener(){
         
         if(lastPoint == null) {
 
-            console.log("null");
-
             var pointer = mCanvas.getPointer(o.e)
             console.log("마우스 다운" + pointer.x + " , " + pointer.y);
         
@@ -198,11 +219,8 @@ function setListener(){
             if(isGuideline) {
                 drawGuideline(firstVector[0], firstVector[1])
             }
-
-
-            
+         
         } else {
-            console.log("not null");
 
             var pointer = mCanvas.getPointer(o.e)
             console.log("마우스 다운" + pointer.x + " , " + pointer.y);
@@ -222,12 +240,11 @@ function setListener(){
 
         }
 
-        
         lengthText = new fabric.Text("0 m", {
             left : pointer.x, 
             top : pointer.y,
             opacity : 0,
-            fontSize : 20
+            fontSize : 16
         });
         
         lengthText.selectable = false;
@@ -263,13 +280,40 @@ function setListener(){
         if(isCorrection) {
 
             if(cosRadius > cos45 && cosRadius <= 1) {
-                line.set({x2 : pointer.x, y2 : addFirstVector[1]});
-                x2poistion = [pointer.x,  addFirstVector[1]];
+
+                console.log("?????" +  length);
+                console.log("?????" +  addFirstVector[0]);
+                console.log("?????" +  addFirstVector[0]+length);
+
+                if(isLengthCorrection) {
+
+                    line.set({x2 : addFirstVector[0]+length, y2 : addFirstVector[1]});
+                    x2poistion = [addFirstVector[0]+length,  addFirstVector[1]];
+
+                } else {
+
+                    line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                    x2poistion = [pointer.x,  addFirstVector[1]];
+
+                }
+
                 isX = true;
                 
-            } else if (cosRadius <= cos45 && cosRadius >= 0 ){
-                line.set({x2 : addFirstVector[0], y2 : pointer.y});
-                x2poistion = [addFirstVector[0],  pointer.y];
+            } else if (cosRadius <= cos45 && cosRadius >= 0 ) {
+
+                if(isLengthCorrection) {
+
+                    line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]+length});
+                    x2poistion = [addFirstVector[0],  addFirstVector[1]+length];
+
+                } else {
+
+                    line.set({x2 : addFirstVector[0], y2 : pointer.y});
+                    x2poistion = [addFirstVector[0],  pointer.y];
+
+                }
+
+
                 isX = false;
             } else {
                 console.log("수식 오류 : "+ cosRadius)
@@ -297,8 +341,6 @@ function setListener(){
                 } 
             }
             
-             
-
         } else {
             line.set({x2 : pointer.x, y2 : pointer.y});
             x2poistion = [pointer.x,  pointer.y];
