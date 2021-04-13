@@ -38,6 +38,9 @@ var length;
 var cosXlength;
 var cosYlength;
 
+//좌표 보정 변수
+var testCircle;
+
 
 window.onload = function drawOneLine(){
     
@@ -48,6 +51,7 @@ window.onload = function drawOneLine(){
 function initHTML(){
     mCanvas = window._canvas = new fabric.Canvas('c');
     mCanvas.selection = false;
+    fabric.Object.prototype.transparentCorners = false;
 }
 
 function editMode(){
@@ -237,6 +241,18 @@ function setListener(){
             if(isGuideline) {
                 drawGuideline(firstVector[0], firstVector[1])
             }
+
+            testCircle = new fabric.Circle({
+                id : 'testCircle',
+                fill : 'rgba(0,0,0,1)',
+                stroke : 'rgba(0,0,0,0.5)', 
+                radius : 3,
+                left : pointer.x, 
+                top : pointer.y,
+                originX : 'center',
+                originY : 'center'
+
+            })
          
         } else {
 
@@ -269,6 +285,7 @@ function setListener(){
         lengthText.selectable = false;
 
         mCanvas.add(lengthText)
+        mCanvas.add(testCircle)
         mCanvas.add(line)
         
     });
@@ -583,5 +600,38 @@ function setListener(){
         lastPoint = null;
     
     });
+
+    mCanvas.on('mouse:over', function(e){
+        console.log("마우스 오버");
+        console.log(e.target);
+        if(e.target == null) {
+            console.log("소재 없음");
+        } else {
+            if(e.target.id == 'testCircle'){
+                e.target.set({
+                    fill : 'red'
+                })
+            }
+        }
+
+        mCanvas.renderAll();
+    });
+
+    mCanvas.on('mouse:out', function(e) {
+        //testCircle.set('fill', 'green');
+        console.log(e.target);
+        if(e.target == null) {
+            console.log("소재 없음");
+        } else {
+
+            if(e.target.id == 'testCircle'){
+                e.target.set({
+                    fill : 'black'
+                })
+            }
+        }
+
+        mCanvas.renderAll();
+      });
 
 }
