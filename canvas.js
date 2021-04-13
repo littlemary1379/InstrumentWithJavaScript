@@ -39,7 +39,7 @@ var cosXlength;
 var cosYlength;
 
 //좌표 보정 변수
-var testCircle;
+var locationCircle;
 
 
 window.onload = function drawOneLine(){
@@ -51,7 +51,7 @@ window.onload = function drawOneLine(){
 function initHTML(){
     mCanvas = window._canvas = new fabric.Canvas('c');
     mCanvas.selection = false;
-    fabric.Object.prototype.transparentCorners = false;
+    
 }
 
 function editMode(){
@@ -171,17 +171,17 @@ function removeSpot(canvas, id) {
 
 function drawGuideline(x, y){
     var firstX, firstY, lastX, lastY;
-    if(x-250 < 0) firstX = 0
-    else firstX = x-250
+    if(x-500 < 0) firstX = 0
+    else firstX = x-500
 
-    if(x+250 > 1000) lastX = 1000
+    if(x+500 > 1000) lastX = 2000
     else lastX = x+250
 
-    if(y-250 < 0) firstY = 0
-    else firstY = y-250
+    if(y-500 < 0) firstY = 0
+    else firstY = y-500
 
-    if(y+250 > 1000) lastY = 1000
-    else lastY = y+250
+    if(y+500 > 1000) lastY = 2000
+    else lastY = y+500
 
     var xPoint = [firstX, y, lastX, y];
     var yPoint = [x, firstY, x, lastY]; 
@@ -242,7 +242,7 @@ function setListener(){
                 drawGuideline(firstVector[0], firstVector[1])
             }
 
-            testCircle = new fabric.Circle({
+            locationCircle = new fabric.Circle({
                 id : 'testCircle',
                 fill : 'rgba(0,0,0,1)',
                 stroke : 'rgba(0,0,0,0.5)', 
@@ -283,9 +283,10 @@ function setListener(){
         });
         
         lengthText.selectable = false;
+        locationCircle.selectable = false;
 
         mCanvas.add(lengthText)
-        mCanvas.add(testCircle)
+        mCanvas.add(locationCircle)
         mCanvas.add(line)
         
     });
@@ -328,7 +329,7 @@ function setListener(){
                     } 
 
                     lengthText.set({
-                        text : Math.round(length*10)/10/100 + " m",
+                        text : Math.round(length * 10 / 100 ) /10 + " m",
                         opacity : 1
                     })
 
@@ -338,7 +339,7 @@ function setListener(){
                     x2poistion = [pointer.x,  addFirstVector[1]];
 
                     lengthText.set({
-                        text : Math.round(slopeLength*10)/10/100 + " m",
+                        text : Math.round(slopeLength * 10 / 100 ) /10 + " m",
                         opacity : 1
                     })
 
@@ -359,7 +360,7 @@ function setListener(){
                     } 
 
                     lengthText.set({
-                        text : Math.round(length*10)/10/100 + " m",
+                        text : Math.round(length * 10 / 100 ) /10 + " m",
                         opacity : 1
                     })
 
@@ -369,7 +370,7 @@ function setListener(){
                     x2poistion = [addFirstVector[0],  pointer.y];
 
                     lengthText.set({
-                        text : Math.round(slopeLength*10)/10/100 + " m",
+                        text : Math.round(slopeLength * 10 / 100 ) /10 + " m",
                         opacity : 1
                     })
 
@@ -457,7 +458,7 @@ function setListener(){
                 x2poistion = [addFirstVector[0]+cosXlength,  addFirstVector[1]+cosYlength];
 
                 lengthText.set({
-                    text : Math.round(length*10)/10/100 + " m",
+                    text : Math.round(length * 10 / 100 ) /10 + " m",
                     opacity : 1
                 })
 
@@ -489,7 +490,7 @@ function setListener(){
                     lengthText.set({
                         left : (pointer.x + addFirstVector[0])/2, 
                         top : (pointer.y+addFirstVector[1])/2,
-                        text : Math.round(slopeLength*10)/10 + " m",
+                        text : Math.round(slopeLength * 10 / 100 ) /10 + " m",
                         opacity : 1
                     })
                 }
@@ -607,7 +608,7 @@ function setListener(){
         if(e.target == null) {
             console.log("소재 없음");
         } else {
-            if(e.target.id == 'testCircle'){
+            if(e.target.id.indexOf("testCircle")!= -1){
                 e.target.set({
                     fill : 'red'
                 })
