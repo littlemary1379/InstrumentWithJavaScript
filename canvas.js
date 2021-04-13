@@ -782,6 +782,9 @@ function setListener(){
     mCanvas.on('mouse:dblclick', function(o){
         console.log("더블클릭");
         lastPoint = null;
+        var textCircleName = "testCircle" + (objectId);
+        removeSpot(mCanvas, textCircleName)
+        mCanvas.renderAll();
     
     });
 
