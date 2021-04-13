@@ -311,7 +311,7 @@ function setListener(){
                     } 
 
                     lengthText.set({
-                        text : length + " m",
+                        text : Math.round(length*10)/10/100 + " m",
                         opacity : 1
                     })
 
@@ -321,7 +321,7 @@ function setListener(){
                     x2poistion = [pointer.x,  addFirstVector[1]];
 
                     lengthText.set({
-                        text : Math.round(slopeLength*10)/10 + " m",
+                        text : Math.round(slopeLength*10)/10/100 + " m",
                         opacity : 1
                     })
 
@@ -342,7 +342,7 @@ function setListener(){
                     } 
 
                     lengthText.set({
-                        text : length + " m",
+                        text : Math.round(length*10)/10/100 + " m",
                         opacity : 1
                     })
 
@@ -352,7 +352,7 @@ function setListener(){
                     x2poistion = [addFirstVector[0],  pointer.y];
 
                     lengthText.set({
-                        text : Math.round(slopeLength*10)/10 + " m",
+                        text : Math.round(slopeLength*10)/10/100 + " m",
                         opacity : 1
                     })
 
@@ -440,7 +440,7 @@ function setListener(){
                 x2poistion = [addFirstVector[0]+cosXlength,  addFirstVector[1]+cosYlength];
 
                 lengthText.set({
-                    text : length + " m",
+                    text : Math.round(length*10)/10/100 + " m",
                     opacity : 1
                 })
 
