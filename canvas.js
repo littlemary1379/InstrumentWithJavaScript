@@ -222,46 +222,115 @@ function setListener(){
     mCanvas.on('mouse:down', function(o){
 
         isDown = true
+
+        var pointer = mCanvas.getPointer(o.e)
         
         if(lastPoint == null) {
 
-            var pointer = mCanvas.getPointer(o.e)
-            // console.log("마우스 다운" + pointer.x + " , " + pointer.y);
+            //아무것도 없을때의 랜더링
+            if(o.target == null) {
+            
+                console.log("없냥?");
         
-            var point = [pointer.x, pointer.y, pointer.x, pointer.y];
-            line = new fabric.Line(point, {
-                id : objectId,
-                strokeWidth : 2,
-                fill : 'rgba(0,0,0,128)',
-                stroke : 'rgba(0,0,0,0.5)',
-                originX : 'center',
-                originY : 'center'
-            });
+                var point = [pointer.x, pointer.y, pointer.x, pointer.y];
+                line = new fabric.Line(point, {
+                    id : objectId,
+                    strokeWidth : 2,
+                    fill : 'rgba(0,0,0,128)',
+                    stroke : 'rgba(0,0,0,0.5)',
+                    originX : 'center',
+                    originY : 'center'
+                });
 
-            firstVector = [pointer.x, pointer.y];
-            addFirstVector = [pointer.x, pointer.y];
+                firstVector = [pointer.x, pointer.y];
+                addFirstVector = [pointer.x, pointer.y];
 
-            if(isGuideline) {
-                drawGuideline(firstVector[0], firstVector[1])
+                if(isGuideline) {
+                    drawGuideline(firstVector[0], firstVector[1])
+                }
+
+                locationCircle = new fabric.Circle({
+                    id : 'testCircle' + objectId,
+                    fill : 'rgba(0,0,0,1)',
+                    stroke : 'rgba(0,0,0,0.5)', 
+                    radius : 3,
+                    left : pointer.x, 
+                    top : pointer.y,
+                    originX : 'center',
+                    originY : 'center'
+                })
+
+            } else {
+                //있을 때 랜더링
+
+                //클릭을 할 때, 점을 클릭하면 생기는 일
+                if(o.target.id.indexOf("testCircle")!= -1){
+                    console.log(o.target);
+                    console.log("또잉?");
+
+                    var point = [o.target.left, o.target.top, pointer.x, pointer.y];
+                    line = new fabric.Line(point, {
+                        id : objectId,
+                        strokeWidth : 2,
+                        fill : 'rgba(0,0,0,128)',
+                        stroke : 'rgba(0,0,0,0.5)',
+                        originX : 'center',
+                        originY : 'center'
+                    });
+
+                    firstVector = [pointer.x, pointer.y];
+                    addFirstVector = [pointer.x, pointer.y];
+
+                    if(isGuideline) {
+                        drawGuideline(firstVector[0], firstVector[1])
+                    }
+
+                } else {
+                   
+                    console.log("???? 엥?");
+        
+                    var point = [pointer.x, pointer.y, pointer.x, pointer.y];
+                    line = new fabric.Line(point, {
+                        id : objectId,
+                        strokeWidth : 2,
+                        fill : 'rgba(0,0,0,128)',
+                        stroke : 'rgba(0,0,0,0.5)',
+                        originX : 'center',
+                        originY : 'center'
+                    });
+
+                    firstVector = [pointer.x, pointer.y];
+                    addFirstVector = [pointer.x, pointer.y];
+
+                    if(isGuideline) {
+                        drawGuideline(firstVector[0], firstVector[1])
+                    }
+
+                    locationCircle = new fabric.Circle({
+                        id : 'testCircle' + objectId,
+                        fill : 'rgba(0,0,0,1)',
+                        stroke : 'rgba(0,0,0,0.5)', 
+                        radius : 3,
+                        left : pointer.x, 
+                        top : pointer.y,
+                        originX : 'center',
+                        originY : 'center'
+                    }) 
+                }
+
             }
 
-            locationCircle = new fabric.Circle({
-                id : 'testCircle' + objectId,
-                fill : 'rgba(0,0,0,1)',
-                stroke : 'rgba(0,0,0,0.5)', 
-                radius : 3,
+            lengthText = new fabric.Text("0 m", {
+                id : "textlength"+objectId,
                 left : pointer.x, 
                 top : pointer.y,
-                originX : 'center',
-                originY : 'center'
+                opacity : 0,
+                fontSize : 16
+            });
 
-            })
-         
         } else {
 
-            var pointer = mCanvas.getPointer(o.e)
-            // console.log("마우스 다운" + pointer.x + " , " + pointer.y);
-            // console.log("마지막 마우스 포인트" + lastPoint[0] + " , " + lastPoint[1]);
+            //랜더링이 남아있을 때
     
             var point = [lastPoint[0], lastPoint[1], lastPoint[0], lastPoint[1]];
             line = new fabric.Line(point, {
@@ -275,15 +344,17 @@ function setListener(){
 
             addFirstVector = [lastPoint[0], lastPoint[1]];
 
+            lengthText = new fabric.Text("0 m", {
+                id : "textlength"+objectId,
+                left : pointer.x, 
+                top : pointer.y,
+                opacity : 0,
+                fontSize : 16
+            });
+
         }
 
-        lengthText = new fabric.Text("0 m", {
-            id : "textlength"+objectId,
-            left : pointer.x, 
-            top : pointer.y,
-            opacity : 0,
-            fontSize : 16
-        });
+
         
         lengthText.selectable = false;
         locationCircle.selectable = false;
@@ -639,9 +710,7 @@ function setListener(){
     });
 
     mCanvas.on('mouse:up', function(o){
-        console.log("마우스 업");
         isDown = false;
-
         var pointer = mCanvas.getPointer(o.e);
 
         if(isCorrection && isX) {
@@ -720,7 +789,8 @@ function setListener(){
         if(e.target == null) {
             
         } else {
-            if(e.target.id.indexOf("testCircle")!= -1){
+            var id = e.target.id
+            if(id.indexOf("testCircle")!= -1){
                 e.target.set({
                     fill : 'red'
                 })
