@@ -10,6 +10,7 @@ var newLine;
 //삭제에 사용하기 위한 변수
 var objectId = 0;
 var renderingObject = false;
+var renderingVectorList = new Array();
 
 //첫 벡터 근처로 오는것을 감지
 var firstVector = null;
@@ -34,9 +35,9 @@ var lengthText;
 //길이 보정 변수
 var isLengthCorrection = false;
 var length;
+var cosXlength;
+var cosYlength;
 
-//최종적으로 이전하는 좌표 리스트
-var floorVectorList;
 
 window.onload = function drawOneLine(){
     
@@ -62,9 +63,23 @@ function editMode(){
         return;
     } 
 
-    removeSpot(mCanvas, objectId-1)
+    removeSpot(mCanvas, objectId-1);
+    
+    var textObjectName = "textlength" + (objectId-1) 
+    removeSpot(mCanvas, textObjectName);
+
     objectId = objectId -1;
+
+    renderingVectorList.pop()
+
+    console.log("???????? " + renderingVectorList.length);
+
+    if(renderingVectorList.length==1) {
+        console.log("1이래");
+    }
+    lastPoint = renderingVectorList[renderingVectorList.length-1]
     mCanvas.renderAll();
+
     console.log("편집모드 종료");
     target.style.color = "black";
 
@@ -84,7 +99,6 @@ function correctionMode(){
     }
     
 }
-
 
 function guidelineMode(){
     var target = document.getElementById("guidelineMode");
@@ -215,6 +229,7 @@ function setListener(){
 
             firstVector = [pointer.x, pointer.y];
             addFirstVector = [pointer.x, pointer.y];
+            renderingVectorList.push([pointer.x, pointer.y]);
 
             if(isGuideline) {
                 drawGuideline(firstVector[0], firstVector[1])
@@ -241,6 +256,7 @@ function setListener(){
         }
 
         lengthText = new fabric.Text("0 m", {
+            id : "textlength"+objectId,
             left : pointer.x, 
             top : pointer.y,
             opacity : 0,
@@ -406,8 +422,8 @@ function setListener(){
         } else {
 
             if(isLengthCorrection) {
-                var cosXlength = xLocationForCos(length, cosRadius)
-                var cosYlength = yLocationForCos(length, cosXlength)
+                cosXlength = xLocationForCos(length, cosRadius)
+                cosYlength = yLocationForCos(length, cosXlength)
 
                 if(addFirstVector[0] > pointer.x) {
                     cosXlength = -cosXlength;
@@ -467,10 +483,6 @@ function setListener(){
                 //console.log("1,3사분면");
                 lengthText.rotate(-Math.acos(cosRadius)*(180/Math.PI));
             }
-
-
-
-  
         }
 
         if(isGuideline) {
@@ -541,8 +553,16 @@ function setListener(){
             }
 
         } else {
-            lastPoint = [pointer.x, pointer.y];
+
+            if(isLengthCorrection) {
+                lastPoint = [addFirstVector[0]+cosXlength,addFirstVector[1]+cosYlength]
+            } else {
+                lastPoint = [pointer.x, pointer.y];
+            }
+            
         }
+
+        renderingVectorList.push(lastPoint);
 
         if(renderingObject == true) {
             console.log("랜더링 만들어져쏘");
