@@ -3,7 +3,6 @@ function mTextboxWatcher(){
     var lengthString = document.getElementById('lengthCorrectionM').value;
     document.getElementById('lengthCorrection').value = lengthString * 100
 
-
 }
 
 function cmTextboxWatcher(){

@@ -72,12 +72,16 @@ function editMode(){
 
     renderingVectorList.pop()
 
-    console.log("???????? " + renderingVectorList.length);
-
-    if(renderingVectorList.length==1) {
-        console.log("1이래");
-    }
     lastPoint = renderingVectorList[renderingVectorList.length-1]
+    if(renderingVectorList.length==0) {
+        console.log("0이래");
+        if(isGuideline) {
+            guidelineMode()
+            firstVector = null;
+        }
+
+    }
+    
     mCanvas.renderAll();
 
     console.log("편집모드 종료");
@@ -229,7 +233,6 @@ function setListener(){
 
             firstVector = [pointer.x, pointer.y];
             addFirstVector = [pointer.x, pointer.y];
-            renderingVectorList.push([pointer.x, pointer.y]);
 
             if(isGuideline) {
                 drawGuideline(firstVector[0], firstVector[1])
