@@ -69,8 +69,11 @@ function editMode(){
 
     removeSpot(mCanvas, objectId-1);
     
-    var textObjectName = "textlength" + (objectId-1) 
+    var textObjectName = "textlength" + (objectId-1);
+    var textCircleName = "testCircle" + (objectId-1);
+
     removeSpot(mCanvas, textObjectName);
+    removeSpot(mCanvas, textCircleName);
 
     objectId = objectId -1;
 
@@ -223,7 +226,7 @@ function setListener(){
         if(lastPoint == null) {
 
             var pointer = mCanvas.getPointer(o.e)
-            console.log("마우스 다운" + pointer.x + " , " + pointer.y);
+            // console.log("마우스 다운" + pointer.x + " , " + pointer.y);
         
             var point = [pointer.x, pointer.y, pointer.x, pointer.y];
             line = new fabric.Line(point, {
@@ -243,7 +246,7 @@ function setListener(){
             }
 
             locationCircle = new fabric.Circle({
-                id : 'testCircle',
+                id : 'testCircle' + objectId,
                 fill : 'rgba(0,0,0,1)',
                 stroke : 'rgba(0,0,0,0.5)', 
                 radius : 3,
@@ -257,8 +260,8 @@ function setListener(){
         } else {
 
             var pointer = mCanvas.getPointer(o.e)
-            console.log("마우스 다운" + pointer.x + " , " + pointer.y);
-            console.log("마지막 마우스 포인트" + lastPoint[0] + " , " + lastPoint[1]);
+            // console.log("마우스 다운" + pointer.x + " , " + pointer.y);
+            // console.log("마지막 마우스 포인트" + lastPoint[0] + " , " + lastPoint[1]);
     
             var point = [lastPoint[0], lastPoint[1], lastPoint[0], lastPoint[1]];
             line = new fabric.Line(point, {
@@ -297,11 +300,16 @@ function setListener(){
             return;
         }
 
-        renderingObject = true;
-        console.log("마우스 이동");
-
         var pointer = mCanvas.getPointer(o.e);
         var x2poistion;
+
+        if(lengthXtoY(addFirstVector,[pointer.x, pointer.y]) < 5) {
+            console.log("??????? 됐나?");
+            renderingObject = false;
+        } else {
+            renderingObject = true;
+            console.log("마우스 이동");
+        }
 
         var slopeLength = lengthXtoY(addFirstVector, [pointer.x, pointer.y])
         var xLength;
@@ -318,14 +326,38 @@ function setListener(){
 
             if(cosRadius > cos45 && cosRadius <= 1) {
 
+                //각도보정O , 길이보정O, x축 보정                
                 if(isLengthCorrection) {
 
                     if(addFirstVector[0] < pointer.x) {
-                        line.set({x2 : addFirstVector[0]+length, y2 : addFirstVector[1]});
-                        x2poistion = [addFirstVector[0]+length,  addFirstVector[1]];
+
+                        if(renderingVectorList.length > 1) {
+                            if(lengthXtoY(firstVector,[addFirstVector[0]+length, addFirstVector[1]]) < 10) {
+                                line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                                x2poistion = [firstVector[0],  firstVector[1]];
+                            } else {
+                                line.set({x2 : addFirstVector[0]+length, y2 : addFirstVector[1]});
+                                x2poistion = [addFirstVector[0]+length,  addFirstVector[1]];
+                            }
+                        } else {
+                            line.set({x2 : addFirstVector[0]+length, y2 : addFirstVector[1]});
+                            x2poistion = [addFirstVector[0]+length,  addFirstVector[1]];
+                        }
+
                     } else {
-                        line.set({x2 : addFirstVector[0]-length, y2 : addFirstVector[1]});
-                        x2poistion = [addFirstVector[0]-length,  addFirstVector[1]];
+
+                        if(renderingVectorList.length > 1) {
+                            if(lengthXtoY(firstVector,[addFirstVector[0]-length, addFirstVector[1]]) < 10) {
+                                line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                                x2poistion = [firstVector[0],  firstVector[1]];
+                            } else {
+                                line.set({x2 : addFirstVector[0]-length, y2 : addFirstVector[1]});
+                                x2poistion = [addFirstVector[0]-length,  addFirstVector[1]];
+                            }
+                        } else {
+                            line.set({x2 : addFirstVector[0]-length, y2 : addFirstVector[1]});
+                            x2poistion = [addFirstVector[0]-length,  addFirstVector[1]];
+                        }
                     } 
 
                     lengthText.set({
@@ -333,10 +365,21 @@ function setListener(){
                         opacity : 1
                     })
 
+                //각도보정O , 길이보정x, x축 보정 
                 } else {
 
-                    line.set({x2 : pointer.x, y2 : addFirstVector[1]});
-                    x2poistion = [pointer.x,  addFirstVector[1]];
+                    if(renderingVectorList.length > 1) {
+                        if(lengthXtoY(firstVector,[pointer.x,pointer.y]) < 10) {
+                            line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                            x2poistion = [firstVector[0],  firstVector[1]];
+                        } else {
+                            line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                            x2poistion = [pointer.x,  addFirstVector[1]];
+                        }
+                    } else {
+                        line.set({x2 : pointer.x, y2 : addFirstVector[1]});
+                        x2poistion = [pointer.x,  addFirstVector[1]];
+                    }
 
                     lengthText.set({
                         text : Math.round(slopeLength * 10 / 100 ) /10 + " m",
@@ -349,14 +392,39 @@ function setListener(){
                 
             } else if (cosRadius <= cos45 && cosRadius >= 0 ) {
 
+                //각도보정O , 길이보정O, y축 보정
                 if(isLengthCorrection) {
 
                     if(addFirstVector[1] < pointer.y) {
-                        line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]+length});
-                        x2poistion = [addFirstVector[0],  addFirstVector[1]+length];
+
+                        if(renderingVectorList.length > 1) {
+                            if(lengthXtoY(firstVector,[addFirstVector[0], addFirstVector[1]+length]) < 10) {
+                                line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                                x2poistion = [firstVector[0],  firstVector[1]];
+                            } else {
+                                line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]+length});
+                                x2poistion = [addFirstVector[0],  addFirstVector[1]+length];
+                            }
+                        } else {
+                            line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]+length});
+                            x2poistion = [addFirstVector[0],  addFirstVector[1]+length];
+                        }
+
                     } else {
-                        line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]-length});
-                        x2poistion = [addFirstVector[0],  addFirstVector[1]-length];
+
+                        if(renderingVectorList.length > 1) {
+                            if(lengthXtoY(firstVector,[addFirstVector[0], addFirstVector[1]-length]) < 10) {
+                                line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                                x2poistion = [firstVector[0],  firstVector[1]];
+                            } else {
+                                line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]-length});
+                                x2poistion = [addFirstVector[0],  addFirstVector[1]-length];
+                            }
+                        } else {
+                            line.set({x2 : addFirstVector[0], y2 : addFirstVector[1]-length});
+                            x2poistion = [addFirstVector[0],  addFirstVector[1]-length];
+                        }
+
                     } 
 
                     lengthText.set({
@@ -364,10 +432,23 @@ function setListener(){
                         opacity : 1
                     })
 
+                //각도보정O , 길이보정x, y축 보정
                 } else {
 
-                    line.set({x2 : addFirstVector[0], y2 : pointer.y});
-                    x2poistion = [addFirstVector[0],  pointer.y];
+                    if(renderingVectorList.length > 1) {
+                        if(lengthXtoY(firstVector,[pointer.x,pointer.y]) < 10) {
+                            line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                            x2poistion = [firstVector[0],  firstVector[1]];
+                        } else {
+                            line.set({x2 : addFirstVector[0], y2 : pointer.y});
+                            x2poistion = [addFirstVector[0],  pointer.y];
+                        }
+                    } else {
+                        line.set({x2 : addFirstVector[0], y2 : pointer.y});
+                        x2poistion = [addFirstVector[0],  pointer.y];
+                    }
+
+
 
                     lengthText.set({
                         text : Math.round(slopeLength * 10 / 100 ) /10 + " m",
@@ -402,8 +483,8 @@ function setListener(){
                                 top : addFirstVector[1],
                             })
                         } 
-
                     } 
+
                 } else {
                     if(slopeLength != 0) {
                         lengthText.set({
@@ -418,7 +499,6 @@ function setListener(){
 
                 if(isLengthCorrection) {
                     if(slopeLength != 0) {
-
                         if(addFirstVector[1] < pointer.y) {
                             lengthText.set({
                                 left : addFirstVector[0],
@@ -437,11 +517,11 @@ function setListener(){
                         top : (pointer.y+addFirstVector[1])/2-textSize/2,
                     });
                 }
-            
             }
             
         } else {
 
+            //각도보정X , 길이보정O
             if(isLengthCorrection) {
                 cosXlength = xLocationForCos(length, cosRadius)
                 cosYlength = yLocationForCos(length, cosXlength)
@@ -452,6 +532,19 @@ function setListener(){
                 
                 if(addFirstVector[1] > pointer.y) {
                     cosYlength = -cosYlength;
+                }
+
+                if(renderingVectorList.length > 1) {
+                    if(lengthXtoY(firstVector,[addFirstVector[0]+cosXlength, addFirstVector[1]+cosYlength]) < 5) {
+                        line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                        x2poistion = [firstVector[0],  firstVector[1]];
+                    } else {
+                        line.set({x2 : addFirstVector[0]+cosXlength, y2 : addFirstVector[1]+cosYlength});
+                        x2poistion = [addFirstVector[0]+cosXlength,  addFirstVector[1]+cosYlength];
+                    }
+                } else {
+                    line.set({x2 : addFirstVector[0]+cosXlength, y2 : addFirstVector[1]+cosYlength});
+                    x2poistion = [addFirstVector[0]+cosXlength,  addFirstVector[1]+cosYlength];
                 }
 
                 line.set({x2 : addFirstVector[0]+cosXlength, y2 : addFirstVector[1]+cosYlength});
@@ -470,22 +563,27 @@ function setListener(){
                 var textXlength = xLocationForCos(textSize, cosRadius)
                 var textYlength = yLocationForCos(textSize, textXlength)
 
-                console.log("textXlength : "+textXlength);
-                console.log("textXlength : "+((addFirstVector[0])+(cosXlength/2)-textXlength));
-                console.log("textXlength : "+ addFirstVector[0]);
-
-                //console.log("textXlength : "+addFirstVector[0]+cosXlength/2-textXlength);
-
                 lengthText.set({
                     left : (addFirstVector[0])+(cosXlength/2)-textXlength/2, 
                     top : addFirstVector[1]+cosYlength/2-textYlength/2,
                 })
 
+            //각도보정X , 길이보정X
             } else {
 
-                line.set({x2 : pointer.x, y2 : pointer.y});
-                x2poistion = [pointer.x,  pointer.y];
-
+                if(renderingVectorList.length > 1) {
+                    if(lengthXtoY(firstVector,[pointer.x,pointer.y]) < 5) {
+                        line.set({x2 : firstVector[0], y2 : firstVector[1]});
+                        x2poistion = [firstVector[0],  firstVector[1]];
+                    } else {
+                        line.set({x2 : pointer.x, y2 : pointer.y});
+                        x2poistion = [pointer.x,  pointer.y];
+                    }
+                } else {
+                    line.set({x2 : pointer.x, y2 : pointer.y});
+                    x2poistion = [pointer.x,  pointer.y];
+                }
+                
                 if(slopeLength != 0) {
                     lengthText.set({
                         left : (pointer.x + addFirstVector[0])/2, 
@@ -504,6 +602,7 @@ function setListener(){
                 //console.log("1,3사분면");
                 lengthText.rotate(-Math.acos(cosRadius)*(180/Math.PI));
             }
+
         }
 
         if(isGuideline) {
@@ -589,10 +688,25 @@ function setListener(){
             console.log("랜더링 만들어져쏘");
             objectId = objectId+1;
             renderingObject = false;
+
+            locationCircle = new fabric.Circle({
+                id : 'testCircle' + objectId,
+                fill : 'rgba(0,0,0,1)',
+                stroke : 'rgba(0,0,0,0.5)', 
+                radius : 3,
+                left : lastPoint[0], 
+                top : lastPoint[1],
+                originX : 'center',
+                originY : 'center'
+    
+            })
+
         } else {
             console.log("랜더링 안만들어져쏘");
             renderingObject = false;
         }
+
+        mCanvas.renderAll();
     
     });
 
@@ -603,10 +717,8 @@ function setListener(){
     });
 
     mCanvas.on('mouse:over', function(e){
-        console.log("마우스 오버");
-        console.log(e.target);
         if(e.target == null) {
-            console.log("소재 없음");
+            
         } else {
             if(e.target.id.indexOf("testCircle")!= -1){
                 e.target.set({
@@ -619,13 +731,10 @@ function setListener(){
     });
 
     mCanvas.on('mouse:out', function(e) {
-        //testCircle.set('fill', 'green');
-        console.log(e.target);
         if(e.target == null) {
-            console.log("소재 없음");
+            
         } else {
-
-            if(e.target.id == 'testCircle'){
+            if(e.target.id.indexOf("testCircle")!= -1){
                 e.target.set({
                     fill : 'black'
                 })
