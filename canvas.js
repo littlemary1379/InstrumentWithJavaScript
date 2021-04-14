@@ -1,7 +1,6 @@
 document.write('<script src="./util/MathUtil.js"></script>');
 document.write('<script type="text/html" src="./node_modules/Firebase.js"></script>');
 
-
 //기본 랜더링 변수
 var mCanvas;
 var line;
@@ -100,6 +99,7 @@ function editMode(){
 
 function sendDatabase(){
     console.log("데이터 내보내기");
+    _test
 }
 
 function correctionMode(){
