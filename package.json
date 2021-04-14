@@ -1,0 +1,22 @@
+{
+  "name": "webinstrument",
+  "version": "1.0.0",
+  "description": "",
+  "main": "./util/Firebase.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/littlemary1379/InstrumentWithJavaScript.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/littlemary1379/InstrumentWithJavaScript/issues"
+  },
+  "homepage": "https://github.com/littlemary1379/InstrumentWithJavaScript#readme",
+  "dependencies": {
+    "firebase": "^8.4.1"
+  }
+}
