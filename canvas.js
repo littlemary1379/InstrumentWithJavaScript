@@ -1,4 +1,6 @@
 document.write('<script src="./util/MathUtil.js"></script>');
+document.write('<script type="text/html" src="./node_modules/Firebase.js"></script>');
+
 
 //기본 랜더링 변수
 var mCanvas;
@@ -94,6 +96,10 @@ function editMode(){
     console.log("편집모드 종료");
     target.style.color = "black";
 
+}
+
+function sendDatabase(){
+    console.log("데이터 내보내기");
 }
 
 function correctionMode(){
@@ -792,8 +798,9 @@ function setListener(){
         if(e.target == null) {
             
         } else {
-            var id = e.target.id
-            if(id.indexOf("testCircle")!= -1){
+            var id = e.target.id+""
+            console.log("아이디가 뭐길래 이꼬라지임?" + id);
+            if(id.includes("testCircle")){
                 e.target.set({
                     fill : 'red'
                 })
@@ -807,7 +814,9 @@ function setListener(){
         if(e.target == null) {
             
         } else {
-            if(e.target.id.indexOf("testCircle")!= -1){
+            var id = e.target.id+""
+            console.log("아이디가 뭐길래 이꼬라지임?" + id);
+            if(id.includes("testCircle")){
                 e.target.set({
                     fill : 'black'
                 })
@@ -818,3 +827,4 @@ function setListener(){
       });
 
 }
+

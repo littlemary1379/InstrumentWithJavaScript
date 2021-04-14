@@ -2,7 +2,8 @@
   "name": "webinstrument",
   "version": "1.0.0",
   "description": "",
-  "main": "./util/Firebase.js",
+  "type" : "module",
+  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -18,5 +19,14 @@
   "homepage": "https://github.com/littlemary1379/InstrumentWithJavaScript#readme",
   "dependencies": {
     "firebase": "^8.4.1"
-  }
+  },
+  "babel": {
+    "presets": [
+      "stage-3",
+      "latest"
+    ]
+  },
+
+  "babel-preset-latest": "^6.16.0",
+  "babel-preset-stage-3": "^6.5.0"
 }
