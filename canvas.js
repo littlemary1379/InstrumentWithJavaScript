@@ -1,5 +1,4 @@
 document.write('<script src="./util/MathUtil.js"></script>');
-document.write('<script type="text/html" src="./node_modules/Firebase.js"></script>');
 
 //기본 랜더링 변수
 var mCanvas;
@@ -95,11 +94,6 @@ function editMode(){
     console.log("편집모드 종료");
     target.style.color = "black";
 
-}
-
-function sendDatabase(){
-    console.log("데이터 내보내기");
-    _test
 }
 
 function correctionMode(){
@@ -660,11 +654,20 @@ function setListener(){
                     line.set({x2 : pointer.x, y2 : pointer.y});
                     x2poistion = [pointer.x,  pointer.y];
                 }
+
+                var textSize = 0;
+                for (var i = 0; i < lengthText._textLines.length; i++) {
+                    textSize += lengthText.measureLine(i).width;
+                }
+
+                var textXlength = xLocationForCos(textSize, cosRadius)
+                var textYlength = yLocationForCos(textSize, textXlength)
+
                 
                 if(slopeLength != 0) {
                     lengthText.set({
-                        left : (pointer.x + addFirstVector[0])/2, 
-                        top : (pointer.y+addFirstVector[1])/2,
+                        left : (pointer.x + addFirstVector[0])/2-textXlength/2, 
+                        top : (pointer.y+addFirstVector[1])/2-textYlength/2,
                         text : Math.round(slopeLength * 10 / 100 ) /10 + " m",
                         opacity : 1
                     })
