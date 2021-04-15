@@ -719,16 +719,24 @@ function setListener(){
     });
 
     mCanvas.on('mouse:up', function(o){
-        
+
         isDown = false;
         lastPoint = x2poistion;
 
-        renderingVectorList.push(lastPoint);
+        renderingVectorList.push(lastPoint)
+        
+        console.log("firstVector : "+ firstVector);
+        console.log("lastPoint : "+ lastPoint);
+
+
+        if(lastPoint[0]==firstVector[0] && lastPoint[1]==firstVector[1]) {
+            console.log("벡터가 같음, 방 하나 만들어진거임 ㅎ");
+            lastPoint = null;
+        }
 
         if(renderingObject == true) {
             console.log("랜더링 만들어져쏘");
             objectId = objectId+1;
-            renderingObject = false;
 
             locationCircle = new fabric.Circle({
                 id : 'testCircle' + objectId,
@@ -744,8 +752,11 @@ function setListener(){
 
         } else {
             console.log("랜더링 안만들어져쏘");
-            renderingObject = false;
         }
+
+        renderingObject = false;
+
+
 
         mCanvas.renderAll();
     
