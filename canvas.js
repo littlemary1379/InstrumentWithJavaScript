@@ -42,6 +42,11 @@ var cosYlength;
 //좌표 보정 변수
 var locationCircle;
 
+//데이터 출력 변수
+/*lineVectorList Wrapper List*/
+var roomDataList = new Array();
+/*structure : startVector, endVector*/
+var lineVectorList;
 
 window.onload = function drawOneLine(){
     
@@ -219,8 +224,15 @@ function drawGuideline(x, y){
     mCanvas.renderAll();
 }
 
+function callRoomData(){
+    console.log("데이터 호출");
+    return roomDataList;
+}
+
 function setListener(){
     mCanvas.on('mouse:down', function(o){
+
+        lineVectorList = new Array();
 
         isDown = true
 
@@ -244,7 +256,6 @@ function setListener(){
                 });
 
                 firstVector = [pointer.x, pointer.y];
-                addFirstVector = [pointer.x, pointer.y];
 
                 if(isGuideline) {
                     drawGuideline(firstVector[0], firstVector[1])
@@ -280,7 +291,6 @@ function setListener(){
                     });
 
                     firstVector = [pointer.x, pointer.y];
-                    addFirstVector = [pointer.x, pointer.y];
 
                     if(isGuideline) {
                         drawGuideline(firstVector[0], firstVector[1])
@@ -301,8 +311,8 @@ function setListener(){
                     });
 
                     firstVector = [pointer.x, pointer.y];
-                    addFirstVector = [pointer.x, pointer.y];
-
+                    
+                    
                     if(isGuideline) {
                         drawGuideline(firstVector[0], firstVector[1])
                     }
@@ -328,6 +338,9 @@ function setListener(){
                 opacity : 0,
                 fontSize : 16
             });
+
+            addFirstVector = [pointer.x, pointer.y];
+        
 
         } else {
 
@@ -355,7 +368,7 @@ function setListener(){
 
         }
 
-
+        lineVectorList.push(addFirstVector)
         
         lengthText.selectable = false;
         locationCircle.selectable = false;
@@ -723,16 +736,10 @@ function setListener(){
         isDown = false;
         lastPoint = x2poistion;
 
-        renderingVectorList.push(lastPoint)
+        
         
         console.log("firstVector : "+ firstVector);
         console.log("lastPoint : "+ lastPoint);
-
-
-        if(lastPoint[0]==firstVector[0] && lastPoint[1]==firstVector[1]) {
-            console.log("벡터가 같음, 방 하나 만들어진거임 ㅎ");
-            lastPoint = null;
-        }
 
         if(renderingObject == true) {
             console.log("랜더링 만들어져쏘");
@@ -755,8 +762,17 @@ function setListener(){
         }
 
         renderingObject = false;
+        renderingVectorList.push(lastPoint);
+        lineVectorList.push(lastPoint);
+        roomDataList.push(lineVectorList);
+
+        console.log(roomDataList);
 
 
+        if(lastPoint[0]==firstVector[0] && lastPoint[1]==firstVector[1]) {
+            console.log("벡터가 같음, 방 하나 만들어진거임 ㅎ");
+            lastPoint = null;
+        }
 
         mCanvas.renderAll();
     
@@ -776,7 +792,6 @@ function setListener(){
             
         } else {
             var id = e.target.id+""
-            console.log("아이디가 뭐길래 이꼬라지임?" + id);
             if(id.includes("testCircle")){
                 e.target.set({
                     fill : 'red'
@@ -792,7 +807,6 @@ function setListener(){
             
         } else {
             var id = e.target.id+""
-            console.log("아이디가 뭐길래 이꼬라지임?" + id);
             if(id.includes("testCircle")){
                 e.target.set({
                     fill : 'black'

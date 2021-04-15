@@ -1,3 +1,9 @@
+document.write('<script src="./canvas.js"></script>');
+
+var db;
+var roomDataString;
+var roomData; 
+
 function sendDatabase(){
     // TODO: Replace the following with your app's Firebase project configuration
 // For Firebase JavaScript SDK v7.20.0 and later, `measurementId` is an optional field
@@ -11,21 +17,28 @@ var firebaseConfig = {
     measurementId: "G-HC012J0V6B"
 };
 
-firebase.initializeApp(firebaseConfig);
+    firebase.initializeApp(firebaseConfig);
 
-var db = firebase.firestore();
+    db = firebase.firestore();
 
-    db.collection("users").add({
-    first: "Ada",
-    last: "Lovelace",
-    born: 1815
-    })
-    .then((docRef) => {
-        console.log("Document written with ID: ", docRef.id);
-    })
-    .catch((error) => {
-        console.error("Error adding document: ", error);
+    roomData = callRoomData();
+    roomDataObject = {};
+
+    for(var i = 0; i < roomData.length; i++) {
+        var key = "vector" + i;
+        console.log(key);
+        roomDataObject["start"+key] = roomData[i][0]
+        roomDataObject["end"+key] = roomData[i][1]
+    }
+
+    console.log(roomDataString);
+    addData()
+
+}
+
+function addData(){
+
+        db.collection("data").doc("two").set(roomDataObject).then(() => {
+        console.log("Document successfully written!");
     });
-
-
 }
