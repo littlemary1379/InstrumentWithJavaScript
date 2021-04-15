@@ -23,6 +23,7 @@ var lastPoint;
 var isCorrection = false;
 var isX;
 var addFirstVector;
+var x2poistion;
 
 //가이드라인 보정 변수
 var isGuideline = false;
@@ -372,7 +373,6 @@ function setListener(){
         }
 
         var pointer = mCanvas.getPointer(o.e);
-        var x2poistion;
 
         if(lengthXtoY(addFirstVector,[pointer.x, pointer.y]) < 5) {
             console.log("??????? 됐나?");
@@ -719,46 +719,9 @@ function setListener(){
     });
 
     mCanvas.on('mouse:up', function(o){
+        
         isDown = false;
-        var pointer = mCanvas.getPointer(o.e);
-
-        if(isCorrection && isX) {
-
-            if(isLengthCorrection) {
-
-                if(addFirstVector[0] < pointer.x) {
-                    lastPoint = [addFirstVector[0]+length, addFirstVector[1]];
-                } else {
-                    lastPoint = [addFirstVector[0]-length, addFirstVector[1]];
-                } 
-
-            } else {
-                lastPoint = [pointer.x, addFirstVector[1]];
-            }
-            
-        } else if(isCorrection && !isX) {
-
-            if(isLengthCorrection) {
-
-                if(addFirstVector[1] < pointer.y) {
-                    lastPoint = [addFirstVector[0], addFirstVector[1]+length];
-                } else {
-                    lastPoint = [addFirstVector[0], addFirstVector[1]-length];
-                } 
-
-            } else {
-                lastPoint = [addFirstVector[0], pointer.y];
-            }
-
-        } else {
-
-            if(isLengthCorrection) {
-                lastPoint = [addFirstVector[0]+cosXlength,addFirstVector[1]+cosYlength]
-            } else {
-                lastPoint = [pointer.x, pointer.y];
-            }
-            
-        }
+        lastPoint = x2poistion;
 
         renderingVectorList.push(lastPoint);
 
