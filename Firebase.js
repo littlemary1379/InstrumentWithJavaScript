@@ -24,21 +24,32 @@ var firebaseConfig = {
     roomData = callRoomData();
     roomDataObject = {};
 
+    
+
     for(var i = 0; i < roomData.length; i++) {
         var key = "vector" + i;
         console.log(key);
-        roomDataObject["start"+key] = roomData[i][0]
-        roomDataObject["end"+key] = roomData[i][1]
+        roomDataObject["startVector"] = roomData[i][0]
+        roomDataObject["endVector"] = roomData[i][1]
+
+        addData(key)
+
     }
 
     console.log(roomDataString);
-    addData()
-
+    
 }
 
-function addData(){
+function addData(doc){
 
-        db.collection("data").doc("two").set(roomDataObject).then(() => {
+        db.collection("testData").doc(doc).set(roomDataObject).then(() => {
+        console.log("Document successfully written!");
+    });
+}
+
+//todo
+function removeData(){
+    db.collection("testData").delete().then(() => {
         console.log("Document successfully written!");
     });
 }
