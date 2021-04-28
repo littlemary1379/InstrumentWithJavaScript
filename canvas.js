@@ -164,6 +164,12 @@ function lengthCorrectionMode() {
     }
 }
 
+//선을 그릴 때 마다 보정변수가 있다면, 보정변수의 값을 리로드 하는 함수임
+function reNewLengthCorrection(){
+    var lengthString = document.getElementById('lengthCorrection').value;
+    length = lengthString*1
+}
+
 function removeSpot(canvas, id) {
     
     canvas.forEachObject(function(obj) {
@@ -413,6 +419,8 @@ function setListener(){
                 //각도보정O , 길이보정O, x축 보정                
                 if(isLengthCorrection) {
 
+                    reNewLengthCorrection();
+
                     if(addFirstVector[0] < pointer.x) {
 
                         if(renderingVectorList.length > 1) {
@@ -478,6 +486,8 @@ function setListener(){
 
                 //각도보정O , 길이보정O, y축 보정
                 if(isLengthCorrection) {
+
+                    reNewLengthCorrection();
 
                     if(addFirstVector[1] < pointer.y) {
 
