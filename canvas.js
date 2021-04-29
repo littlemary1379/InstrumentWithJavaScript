@@ -76,7 +76,8 @@ function editMode(){
     removeSpot(mCanvas, objectId-1);
     
     var textObjectName = "textlength" + (objectId-1);
-    var textCircleName = "testCircle" + (objectId-1);
+    var textCircleName = "testCircle" + (objectId);
+    var textCircleName1 = "testCircle" + (objectId-1);
 
     removeSpot(mCanvas, textObjectName);
     removeSpot(mCanvas, textCircleName);
@@ -88,6 +89,7 @@ function editMode(){
     lastPoint = renderingVectorList[renderingVectorList.length-1]
     if(renderingVectorList.length==0) {
         console.log("0이래");
+        removeSpot(mCanvas, textCircleName1);
         if(isGuideline) {
             guidelineMode()
             firstVector = null;
@@ -218,8 +220,6 @@ function drawGuideline(x, y){
         originX : 'center',
         originY : 'center'
     });
-
-    
     
     mCanvas.add(xGuideLine);
     mCanvas.add(yGuideLine);
@@ -243,6 +243,8 @@ function setListener(){
         isDown = true
 
         var pointer = mCanvas.getPointer(o.e)
+
+        console.log(lastPoint);
         
         if(lastPoint == null) {
 
@@ -376,11 +378,15 @@ function setListener(){
 
         lineVectorList.push(addFirstVector)
         
+        if(locationCircle != null){
+            locationCircle.selectable = false;
+            mCanvas.add(locationCircle)
+        }
+
         lengthText.selectable = false;
-        locationCircle.selectable = false;
+        
 
         mCanvas.add(lengthText)
-        mCanvas.add(locationCircle)
         mCanvas.add(line)
         
     });
@@ -791,6 +797,7 @@ function setListener(){
     mCanvas.on('mouse:dblclick', function(o){
         console.log("더블클릭");
         lastPoint = null;
+        locationCircle = null;
         var textCircleName = "testCircle" + (objectId);
         removeSpot(mCanvas, textCircleName)
         mCanvas.renderAll();
